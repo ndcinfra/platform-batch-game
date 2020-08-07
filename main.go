@@ -214,7 +214,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 
 	// TODO: delete game_unit table before insert
 	//_, err = conn.Exec(context.Background(), "delete from public.game_unit")
-	_, err = conn.Exec(context.Background(), "TRUNCATE public.game_unit")
+	_, err = conn.Exec(context.Background(), "TRUNCATE public.game_unit RESTART IDENTITY;")
 
 	if err != nil {
 		logs.Error("delete error: ", err)
