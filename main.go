@@ -251,6 +251,8 @@ func main() {
 	conn, err := pgx.Connect(context.Background(), DB_CON)
 	if err != nil {
 		logs.Error("Unable to connect to database: %v", err)
+		fmt.Printf("Unable to connect to database: %v\n", err)
+		os.Exit(1)
 		//fmt.Printf("Unable to connect to database: %v\n", err)
 	}
 	defer conn.Close(context.Background())
@@ -261,6 +263,6 @@ func main() {
 	GetGameDataDaily(conn)
 
 	fmt.Printf("End Get Game Data !\n")
-	os.Exit(1)
+	os.Exit(0)
 
 }
