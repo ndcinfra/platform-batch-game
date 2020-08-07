@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo 'start get game data...';
+echo 'start cron job...';
 
 go run main.go
 
