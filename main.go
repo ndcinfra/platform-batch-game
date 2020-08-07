@@ -5,12 +5,14 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/logs"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/jackc/pgx/v4"
 	"github.com/joho/godotenv"
+	"github.com/ndcinfra/platform-batch-game/libs"
 	"github.com/ndcinfra/platform-batch-game/models"
 )
 
@@ -233,8 +235,12 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		logs.Info("count: ", i, "result: ", ct.RowsAffected())
 	}
 
+	end := time.Now()
 	elapsed := time.Since(start)
-	logs.Info("finish: ", time.Now(), " , elapsed: ", elapsed)
+	logs.Info("finish: ", end, " , elapsed: ", elapsed)
+
+	libs.SendEmail(strconv.Itoa(count), start.String(), end.String(), elapsed.String())
+
 	return
 }
 
