@@ -22,7 +22,7 @@ func SendEmail(counts, start, end, elasped string) {
 	SMTPPASS := os.Getenv("SMTPPASS")
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", "youngtip@gmail.com")
+	m.SetHeader("From", "no-reply@naddicjapan.com")
 	m.SetHeader("To", "youngtip@gmail.com", "youngtip@naddic.com")
 	m.SetHeader("Subject", "[JP-CRONJOB] Daily Get Game Data Cronjob Result")
 
