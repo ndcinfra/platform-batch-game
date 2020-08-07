@@ -5,9 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/astaxie/beego/logs"
+	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/jackc/pgx/v4"
+	"github.com/joho/godotenv"
 	"github.com/ndcinfra/platform-batch-game/models"
 )
 
@@ -65,7 +68,8 @@ var db *sql.DB
 
 // Daily Cron Job for getting game data
 func GetGameDataDaily(conn *pgx.Conn) {
-	logs.Info("start GetGameDataDaily")
+	start := time.Now()
+	logs.Info("start GetGameDataDaily: ", start)
 
 	connString := os.Getenv("DBHOST_GAME_MSSQL")
 
@@ -75,13 +79,16 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	db, err = sql.Open("sqlserver", connString)
 	if err != nil {
 		logs.Error("Error creating connection pool: ", err.Error())
+		return
 	}
 	ctx := context.Background()
 	err = db.PingContext(ctx)
 	if err != nil {
 		logs.Error(err.Error())
+		return
 	}
-	fmt.Printf("Connected!\n")
+	//fmt.Printf("Connected!\n")
+	logs.Info("Connected Game DB")
 
 	tsql := fmt.Sprintf(DailyBatchSql)
 
@@ -89,6 +96,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	rows, err := db.QueryContext(ctx, tsql)
 	if err != nil {
 		logs.Error("Error execute query: ", err)
+		return
 	}
 
 	defer rows.Close()
@@ -148,6 +156,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		)
 		if err != nil {
 			logs.Error("Error rows.Scan: ", err)
+			return
 		}
 
 		//fmt.Printf("g_account_uid: %d \n", gameUnit.GAccountUid)
@@ -204,6 +213,11 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	logs.Info("total count: %d \n", count)
 
 	// TODO: delete game_unit table before insert
+	_, err = conn.Exec(context.Background(), "delete from public.game_unit")
+	if err != nil {
+		logs.Error("delete error: ", err)
+		return
+	}
 
 	// bulk inserts
 	br := conn.SendBatch(context.Background(), batch)
@@ -211,13 +225,23 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		ct, err := br.Exec()
 		if err != nil {
 			logs.Error("insert error: ", i, err)
+			return
 		}
 
-		logs.Info("count: ", i, "result: ", ct.RowsAffected)
+		logs.Info("count: ", i, "result: ", ct.RowsAffected())
 	}
+
+	elapsed := time.Since(start)
+	logs.Info("finish: ", time.Now(), " , elapsed: ", elapsed)
+	return
 }
 
 func main() {
+	fmt.Printf("Start Get Game Data !")
+	err := godotenv.Load()
+	if err != nil {
+		logs.Error("Error loading .env file")
+	}
 
 	//logging
 	logs.SetLogger(logs.AdapterFile, `{"filename":"./logs/project.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":90,"color":true}`)
@@ -227,7 +251,16 @@ func main() {
 	conn, err := pgx.Connect(context.Background(), DB_CON)
 	if err != nil {
 		logs.Error("Unable to connect to database: %v", err)
+		//fmt.Printf("Unable to connect to database: %v\n", err)
 	}
 	defer conn.Close(context.Background())
+
+	logs.Info("connection success")
+	//fmt.Printf("connection success")
+
+	GetGameDataDaily(conn)
+
+	fmt.Printf("End Get Game Data !")
+	os.Exit(1)
 
 }
