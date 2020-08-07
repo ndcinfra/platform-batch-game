@@ -237,7 +237,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 }
 
 func main() {
-	fmt.Printf("Start Get Game Data !")
+	fmt.Printf("Start Get Game Data !\n")
 	err := godotenv.Load()
 	if err != nil {
 		logs.Error("Error loading .env file")
@@ -260,7 +260,7 @@ func main() {
 
 	GetGameDataDaily(conn)
 
-	fmt.Printf("End Get Game Data !")
+	fmt.Printf("End Get Game Data !\n")
 	os.Exit(1)
 
 }
