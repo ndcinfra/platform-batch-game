@@ -281,11 +281,14 @@ func main() {
 	//c.AddFunc("TZ=Asia/Tokyo 30 04 * * * *", func() { fmt.Println("Runs at 04:30 Tokyo time every day") })
 	//c.AddFunc("@hourly", func() { fmt.Println("Every hour") })
 	//c.AddFunc("@every 0h0m1s", func() { fmt.Println("Every second") })
-	c.AddFunc("@every 0h2m0s", func() { fmt.Println("Every 2 min") })
+	c.AddFunc("@every 0h2m0s", func() {
+		fmt.Println("Every 2 min")
+		StartGetGameData()
+	})
 	c.Start()
 
 	// Funcs are invoked in their own goroutine, asynchronously.
-	StartGetGameData()
+
 	// Funcs may also be added to a running Cron
 	//c.AddFunc("@daily", func() { fmt.Println("Every day") })
 
