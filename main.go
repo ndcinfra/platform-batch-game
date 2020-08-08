@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -245,11 +246,14 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	return
 }
 
-func StartGetGameData() {
+func StartGetGameData(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	fmt.Printf("Start Get Game Data !\n")
 	err := godotenv.Load()
 	if err != nil {
 		logs.Error("Error loading .env file")
+		os.Exit(1)
 	}
 
 	//logging
@@ -276,6 +280,7 @@ func StartGetGameData() {
 }
 
 func main() {
+
 	c := cron.New()
 	//c.AddFunc("0 30 * * * *", func() { fmt.Println("Every hour on the half hour") })
 	//c.AddFunc("TZ=Asia/Tokyo 30 04 * * * *", func() { fmt.Println("Runs at 04:30 Tokyo time every day") })
@@ -283,7 +288,6 @@ func main() {
 	//c.AddFunc("@every 0h0m1s", func() { fmt.Println("Every second") })
 	c.AddFunc("@every 0h2m0s", func() {
 		fmt.Println("Every 2 min")
-		go StartGetGameData()
 	})
 	c.Start()
 
