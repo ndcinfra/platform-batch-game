@@ -14,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/ndcinfra/platform-batch-game/libs"
 	"github.com/ndcinfra/platform-batch-game/models"
+	"gopkg.in/robfig/cron.v2"
 )
 
 var DailyBatchSql = "SELECT " +
@@ -244,7 +245,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	return
 }
 
-func main() {
+func StartGetGameData() {
 	fmt.Printf("Start Get Game Data !\n")
 	err := godotenv.Load()
 	if err != nil {
@@ -272,5 +273,24 @@ func main() {
 
 	fmt.Printf("End Get Game Data !\n")
 	os.Exit(0)
+}
 
+func main() {
+	c := cron.New()
+	//c.AddFunc("0 30 * * * *", func() { fmt.Println("Every hour on the half hour") })
+	//c.AddFunc("TZ=Asia/Tokyo 30 04 * * * *", func() { fmt.Println("Runs at 04:30 Tokyo time every day") })
+	//c.AddFunc("@hourly", func() { fmt.Println("Every hour") })
+	//c.AddFunc("@every 0h0m1s", func() { fmt.Println("Every second") })
+	c.AddFunc("@every 0h2m0s", func() { fmt.Println("Every 2 min") })
+	c.Start()
+
+	// Funcs are invoked in their own goroutine, asynchronously.
+	StartGetGameData()
+	// Funcs may also be added to a running Cron
+	//c.AddFunc("@daily", func() { fmt.Println("Every day") })
+
+	// Added time to see output
+	time.Sleep(10 * time.Second)
+
+	c.Stop() // Stop the scheduler (does not stop any jobs already running).
 }
