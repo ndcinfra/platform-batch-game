@@ -283,7 +283,7 @@ func main() {
 	//c.AddFunc("@every 0h0m1s", func() { fmt.Println("Every second") })
 	c.AddFunc("@every 0h2m0s", func() {
 		fmt.Println("Every 2 min")
-		StartGetGameData()
+		go StartGetGameData()
 	})
 	c.Start()
 
