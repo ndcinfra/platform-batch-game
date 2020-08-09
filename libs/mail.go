@@ -20,11 +20,14 @@ func SendEmail(counts, start, end, elasped string) {
 	SMTPPORT, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
 	SMTPID := os.Getenv("SMTPID")
 	SMTPPASS := os.Getenv("SMTPPASS")
+	ENV := os.Getenv("ENV")
+
+	subject := "[JP-CRONJOB] " + ENV + " Daily Get Game Data Cronjob Result"
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", "no-reply@naddicjapan.com")
 	m.SetHeader("To", "youngtip@gmail.com", "youngtip@naddic.com")
-	m.SetHeader("Subject", "[JP-CRONJOB] Daily Get Game Data Cronjob Result")
+	m.SetHeader("Subject", subject)
 
 	body := "<br/>--------------------------------" +
 		"<br/>Result Counts: " + counts + ", success.<br/><br/>" +
