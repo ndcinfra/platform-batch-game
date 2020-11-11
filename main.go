@@ -226,13 +226,13 @@ func GetGameDataDaily(conn *pgx.Conn) {
 	// bulk inserts
 	br := conn.SendBatch(context.Background(), batch)
 	for i := 0; i < count; i++ {
-		ct, err := br.Exec()
+		_, err := br.Exec()
 		if err != nil {
-			logs.Error("insert error: ", i, err)
+			//logs.Error("insert error: ", i, err)
 			return
 		}
 
-		logs.Info("count: ", i, "result: ", ct.RowsAffected())
+		//logs.Info("count: ", i, "result: ", ct.RowsAffected())
 	}
 
 	end := time.Now()
