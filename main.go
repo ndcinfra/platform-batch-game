@@ -235,12 +235,12 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		}
 
 		logs.Info("count: ", i, "result: ", ct.RowsAffected())
-	}
 
-	err = br.Close()
-	if err != nil {
-		logs.Error("close error: ", err)
-		return
+		err = br.Close()
+		if err != nil {
+			logs.Error("close error: ", err)
+			return
+		}
 	}
 
 	end := time.Now()
