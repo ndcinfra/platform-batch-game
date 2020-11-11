@@ -16,7 +16,7 @@ import (
 	"github.com/ndcinfra/platform-batch-game/models"
 )
 
-var DailyBatchSql = "SELECT  " +
+var DailyBatchSql = "SELECT TOP 1000000 " +
 	"a.UID as g_account_uid, " +
 	"a.PublisherSN as g_account_publisher_sn, " +
 	"a.ID as g_account_id, " +
@@ -235,12 +235,12 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		}
 
 		logs.Info("count: ", i, "result: ", ct.RowsAffected())
+	}
 
-		err = br.Close()
-		if err != nil {
-			logs.Error("close error: ", err)
-			return
-		}
+	err = br.Close()
+	if err != nil {
+		logs.Error("close error: ", err)
+		return
 	}
 
 	end := time.Now()
