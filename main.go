@@ -21,7 +21,7 @@ var DailyBatchSql = "SELECT " +
 	"a.PublisherSN as g_account_publisher_sn, " +
 	"a.ID as g_account_id, " +
 	"ISNULL(CONVERT(varchar(max), a.Info, 0),'') as g_account_info, " +
-	"a.NickName as g_account_nick_name, " +
+	"ISNULL(a.NickName,'') as g_account_nick_name, " +
 	"a.AccountLevel as g_account_account_level, " +
 	"b.UID as g_unit_uid, " +
 	"b.OwnerUID as g_unit_owner_uid, " +
