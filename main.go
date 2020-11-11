@@ -60,7 +60,8 @@ var DailyBatchSql = "SELECT " +
 	"b.DamageFontID as g_unit_damage_font_id, " +
 	"b.DungeonClearCount as g_unit_dungeon_clear_count " +
 	"FROM [CW_Account].[dbo].[tbl_Account] a, [CW_Game].[dbo].[tbl_unit] b " +
-	"WHERE a.UID = b.OwnerUID "
+	"WHERE a.UID = b.OwnerUID " +
+	"ORDER BY b.LastUseTime desc limit 1000000"
 
 var insertSql = " INSERT INTO public.game_unit(" +
 	"g_account_uid, g_account_publisher_sn, g_account_id, g_account_info, g_account_nick_name, g_account_account_level, g_unit_uid, g_unit_owner_uid, g_unit_unit_id, g_unit_unit_sub_type, g_uint_level, g_unit_exp, g_unit_gold, g_unit_pve_skill_point, g_unit_pna_skill_point, g_unit_item_skill_point, g_unit_class_upgrade_level, g_unit_tutorial_task, g_unit_title_id, g_unit_town_id, g_unit_pos_x, g_unit_pos_y, g_unit_pos_z, g_unit_tutorial_complete_level, g_unit_is_first_slot, g_unit_quick_slot_unlock, g_unit_rebirth_coin, g_unit_entrance_point, g_unit_create_time, g_unit_last_use_time, g_unit_last_leave_time, g_unit_removed, g_unit_removed_time, g_uit_union_point, g_unit_visual_title_id, g_unit_avatar_mode, g_unit_visual_frame_id, g_unit_closet_set_slot_expand_count, g_unit_artifact_energy, g_unit_artifact_on_off, g_unit_damage_font_id, g_unit_dungeon_clear_count) " +
@@ -83,6 +84,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 		logs.Error("Error creating connection pool: ", err.Error())
 		return
 	}
+
 	ctx := context.Background()
 	err = db.PingContext(ctx)
 	if err != nil {
@@ -263,6 +265,7 @@ func main() {
 		os.Exit(1)
 		//fmt.Printf("Unable to connect to database: %v\n", err)
 	}
+
 	defer conn.Close(context.Background())
 
 	logs.Info("connection success")
