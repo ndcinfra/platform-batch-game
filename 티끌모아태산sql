@@ -1,0 +1,88 @@
+
+--티끌 모아 꿀템, 누적 구매 아이템 관련
+--모든 유저 대상 최고 캐릭터 레벨 조사.
+--DECLARE	@DateStart		SMALLDATETIME	= '2021-01-14 14:00:00'
+--DECLARE	@DateFinish		SMALLDATETIME	= '2021-01-28 09:59:59'
+
+
+    SELECT	acc.ID, RankUserMaxLevel.UnitUID as UnitUID, RankUserMaxLevel.OwnerUID as OwnerUID
+    FROM	[CW_Account].[dbo].[tbl_Account] as acc with(nolock), 
+            (
+                SELECT	UNT.OwnerUID, UNT.UID AS UnitUID , ROW_NUMBER() OVER(PARTITION BY UNT.OwnerUID ORDER BY UNT.UID ASC) AS UnitCreateRank
+                FROM	[CW_Game].[dbo].[tbl_Unit] AS UNT WITH(NOLOCK),
+                        (
+                            SELECT	OwnerUID, MAX(Level) AS Max_level
+                            FROM	[CW_Game].[dbo].[tbl_Unit]  WITH(NOLOCK)
+                            WHERE	OwnerUID IN (
+                                                    SELECT	UNT2.OwnerUID
+                                                    FROM	[CW_Game].[dbo].[tbl_Unit] AS UNT2
+                                                    --WHERE	UnitSubType	=	@UnitSubTye
+                                                    --AND	CreateTime	>=	@DateStart
+                                                    --AND	CreateTime	<	@DateFinish
+                                                    GROUP
+                                                    BY	UNT2.OwnerUID
+                                                )
+                            AND		Removed = 0
+                            GROUP 
+                            BY	OwnerUID
+                        ) AS LVL
+                WHERE	UNT.OwnerUID	= LVL.OwnerUID
+                AND	UNT.Level		= LVL.Max_level
+                AND	Removed = 0
+            ) AS RankUserMaxLevel 
+
+    WHERE	RankUserMaxLevel.UnitCreateRank = 1
+    AND acc.UID = RankUserMaxLevel.OwnerUID
+    AND acc.ID != ''
+
+/*
+ORDER
+  BY	RankUserMaxLevel.UnitUID;
+*/
+
+
+--query
+
+--1. from game db
+
+    SELECT	acc.ID, RankUserMaxLevel.UnitUID as UnitUID, RankUserMaxLevel.OwnerUID as OwnerUID
+    FROM	[CW_Account].[dbo].[tbl_Account] as acc with(nolock), 
+            (
+                SELECT	UNT.OwnerUID, UNT.UID AS UnitUID , ROW_NUMBER() OVER(PARTITION BY UNT.OwnerUID ORDER BY UNT.UID ASC) AS UnitCreateRank
+                FROM	[CW_Game].[dbo].[tbl_Unit] AS UNT WITH(NOLOCK),
+                        (
+                            SELECT	OwnerUID, MAX(Level) AS Max_level
+                            FROM	[CW_Game].[dbo].[tbl_Unit]  WITH(NOLOCK)
+                            WHERE	OwnerUID IN (
+                                                    SELECT	UNT2.OwnerUID
+                                                    FROM	[CW_Game].[dbo].[tbl_Unit] AS UNT2
+                                                    --WHERE	UnitSubType	=	@UnitSubTye
+                                                    --AND	CreateTime	>=	@DateStart
+                                                    --AND	CreateTime	<	@DateFinish
+                                                    GROUP
+                                                    BY	UNT2.OwnerUID
+                                                )
+                            AND		Removed = 0
+                            GROUP 
+                            BY	OwnerUID
+                        ) AS LVL
+                WHERE	UNT.OwnerUID	= LVL.OwnerUID
+                AND	UNT.Level		= LVL.Max_level
+                AND	Removed = 0
+            ) AS RankUserMaxLevel 
+
+    WHERE	RankUserMaxLevel.UnitCreateRank = 1
+    AND acc.UID = RankUserMaxLevel.OwnerUID
+    AND acc.ID != ''
+
+--2. insert into platform's temp table
+
+--3. search
+select a.u_id, sum(amount), b.unit_uid
+	from public.deduct_history a, public.z_temp_tyccul_event b
+	where a.used_at >= '2020-12-30 18:00:00'
+	and a.used_at < '2021-01-28 10:00:00'
+	and a.u_id::TEXT = b.u_id
+	group by a.u_id, b.u_id, b.unit_uid
+	having sum(amount) >= 2000
+	order by sum(amount)

@@ -85,8 +85,8 @@ SELECT	UserUID, COUNT(1) AS TotalDungeonClearCount FROM tbl_actionlog_202012 WIT
 --던젼 이벤트
 USE [CW_GameLog_Archive]
 GO
-DECLARE @StartDate SMALLDATETIME = '2021-01-14 12:00:00';
-DECLARE @EndtDate SMALLDATETIME = '2021-01-21 03:59:59';
+DECLARE @StartDate SMALLDATETIME = ' 2021-01-21 04:00:00';
+DECLARE @EndtDate SMALLDATETIME = '2021-01-28 09:59:59';
 
 SELECT UserUID, COUNT(1) AS TotalDungeonClearCount
 FROM tbl_actionlog_202101 WITH(NOLOCK)
@@ -97,10 +97,12 @@ GROUP BY UserUID HAVING COUNT(1) >= 10;
 
 -- 던젼 이벤프 틀랫폼 u_id 추출
 --1
+/*
 SELECT g_account_id, gameuid
 FROM public.z_temp_dungeon_event a, game_unit b
 where a.gameuid = b.g_account_uid
 group by g_account_id, gameuid
+*/
 
 	--2
 insert into public.z_temp_dungeon_event
