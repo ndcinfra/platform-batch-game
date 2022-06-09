@@ -206,7 +206,7 @@ func GetGameDataDaily(conn *pgx.Conn) {
 			gameUnit.GUnitAvatarMode,
 			gameUnit.GUnitVisualFrameId,
 			gameUnit.GUnitClosetSetSlotExpandCount,
-			//gameUnit.GUnitArtifactEnergy,
+			//gameUnit.GUnitArtifactEnergy, // removed
 			//gameUnit.GUnitArtifactOnOff,
 			gameUnit.GUnitDamageFontId,
 			gameUnit.GUnitDungeonClearCount)
