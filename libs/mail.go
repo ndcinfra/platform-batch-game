@@ -28,7 +28,7 @@ func SendEmail(counts, start, end, elasped string) {
 	m := gomail.NewMessage()
 
 	if COUNTRY == "JP" {
-		m.SetHeader("From", "no-reply@naddicjapan.com")
+		m.SetHeader("From", "register@naddicjapan.com")
 	} else {
 		m.SetHeader("From", "no-reply@closersonline.com")
 	}
